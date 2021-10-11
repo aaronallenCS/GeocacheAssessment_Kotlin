@@ -6,7 +6,9 @@ import android.content.pm.PackageManager
 import android.location.Location
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
+import android.view.View
 import android.widget.Toast
+import androidx.appcompat.app.AlertDialog
 import androidx.core.app.ActivityCompat
 import com.google.android.gms.location.FusedLocationProviderClient
 import com.google.android.gms.location.LocationServices
@@ -16,9 +18,10 @@ import com.google.android.gms.maps.GoogleMap
 import com.google.android.gms.maps.OnMapReadyCallback
 import com.google.android.gms.maps.SupportMapFragment
 import com.google.android.gms.maps.model.LatLng
+import com.google.android.gms.maps.model.Marker
 import com.google.android.gms.maps.model.MarkerOptions
 
-class MapsActivity : AppCompatActivity(), OnMapReadyCallback {
+class MapsActivity : AppCompatActivity(), OnMapReadyCallback, GoogleMap.OnMarkerClickListener {
 
     private lateinit var mMap: GoogleMap
     private lateinit var lastLocation: Location;
@@ -58,6 +61,7 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback {
 
         // Add a marker in Sydney and move the camera
         mMap.uiSettings.isZoomControlsEnabled = true
+        mMap.setOnMarkerClickListener(this)
         setUpMap()
     }
 
@@ -91,5 +95,29 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback {
         markerOptions.title("$currentLatLong")
         mMap.addMarker(markerOptions)
     }
+
+    override fun onRequestPermissionsResult(
+        requestCode: Int,
+        permissions: Array<out String>,
+        grantResults: IntArray
+    ) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults)
+        if(requestCode == PERMISSION_REQUEST_ACCESS_FINE_LOCATION) {
+            when (grantResults[0]) {
+                PackageManager.PERMISSION_GRANTED -> setUpMap()
+                PackageManager.PERMISSION_DENIED -> dialogPermissionDenied(window.decorView)
+            }
+        }
+    }
+
+    private fun dialogPermissionDenied(view: View) {
+        val builder = AlertDialog.Builder(this)
+        builder.setTitle("Location Access")
+        builder.setMessage("Allow your location to continue with the app")
+        builder.setPositiveButton("OK", DialogInterface.OnClickListener(function = positiveButtonClick))
+        builder.show()
+    }
+
+    override fun onMarkerClick(p0: Marker?) = false
 
 }
