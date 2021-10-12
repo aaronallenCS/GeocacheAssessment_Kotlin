@@ -67,6 +67,13 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback, GoogleMap.OnMarker
         setUpMap()
     }
 
+    /**
+     *
+     * Set up map, asks users for their required permissions, once granted it sets the fused location
+     * to the user's current location then places the marker, animating the camera to the current
+     * user's location
+     *
+     */
     private fun setUpMap() {
         if (ActivityCompat.checkSelfPermission(
                 this,
@@ -92,12 +99,21 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback, GoogleMap.OnMarker
         }
     }
 
+    /**
+     *
+     * Places a marker on a map, giving it the title of it's current lat/long values
+     *
+     */
     private fun placeMarkerOnMap(currentLatLong: LatLng) {
         val markerOptions = MarkerOptions().position(currentLatLong)
         markerOptions.title("$currentLatLong")
         mMap.addMarker(markerOptions)
     }
 
+    /**
+     * onRequestPermissionResult() for permission, if it has been granted, set up the map
+     * if not use a dummy action dialogue which pops up prompting the user the permission is required
+     */
     override fun onRequestPermissionsResult(
         requestCode: Int,
         permissions: Array<out String>,
@@ -112,11 +128,18 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback, GoogleMap.OnMarker
         }
     }
 
+    /**
+     * Inflates the toolbar's menu items
+     */
+
     override fun onCreateOptionsMenu(menu: Menu): Boolean {
         menuInflater.inflate(R.menu.menu_buttons, menu)
         return true
     }
 
+    /**
+     * If the add maker menu item is selected, give the updated location and place the marker
+     */
     override fun onOptionsItemSelected(item: MenuItem): Boolean = when(item.itemId){
         R.id.action_add -> {
             mMap.clear()
